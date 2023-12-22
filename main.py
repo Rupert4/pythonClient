@@ -1,6 +1,6 @@
 import sys
 import datetime
-from PyQt6 import uic, QtCore, QtGui, QtWidgets
+from PyQt5 import uic, QtCore, QtGui, QtWidgets
 
 
 class MainWindows(QtWidgets.QMainWindow):
