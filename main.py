@@ -34,6 +34,7 @@ class MainWindows(QtWidgets.QMainWindow):
         try:
             response = requests.get(url)
             response.raise_for_status()
+            # requestsasync
         except HTTPError as http_err:
             return  None
         else:
@@ -51,6 +52,7 @@ class MainWindows(QtWidgets.QMainWindow):
             self.listWidget.insertItem(self.MessageID,msgText)
             self.MessageID+=1
             message = self.GetMessage(self.MessageID)
+            #Threading
 
 
 # Press the green button in the gutter to run the script.
