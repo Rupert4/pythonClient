@@ -7,7 +7,7 @@ from requests.exceptions import HTTPError
 
 
 class MainWindows(QtWidgets.QMainWindow):
-    ServerAdress = "http://locallhost:5000"
+    ServerAdress = "http://127.0.0.1:5000"
     MessageID = 0
 
     def __init__(self, *args, **kwargs):
@@ -17,6 +17,7 @@ class MainWindows(QtWidgets.QMainWindow):
 
     def SendButton_clicked(self):
         self.SendMessage()
+
     def SendMessage(self):
         UserName = self.UserName.text()
         MessageText = self.Message.text()
@@ -28,10 +29,37 @@ class MainWindows(QtWidgets.QMainWindow):
         request = requests.post(url,json =data)
         #print(request.status_code, request.reason)
 
+    def GetMessage(self,id):
+        url = self.ServerAdress + "/api/Messanger/" +str(id)
+        try:
+            response = requests.get(url)
+            response.raise_for_status()
+        except HTTPError as http_err:
+            return  None
+        else:
+            text = response.text
+            return text
+    def timerEvent(self):
+        message = self.GetMessage(self.MessageID)
+        while message is not None:
+            message = json.loads(message)
+            UserName = message["UserName"]
+            MessageText = message["MessageText"]
+            TimeStamp = message["TimeStamp"]
+            msgText =f"{TimeStamp}:{UserName}:{MessageText}"
+            #print(msgText)
+            self.listWidget.insertItem(self.MessageID,msgText)
+            self.MessageID+=1
+            message = self.GetMessage(self.MessageID)
+
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)
     window = MainWindows()
     window.show()
+    timer = QtCore.QTimer()
+    time = QtCore.QTime(0,0,0)
+    timer.timeout.connect(window.timerEvent)
+    timer.start(5000)
     sys.exit(app.exec())
